@@ -2,7 +2,7 @@
   "name": "logistum",
   "version": "1.0.0",
   "description": "",
-  "main": "start_server.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,6 +15,10 @@
   "homepage": "https://bitbucket.org/MaximFedosov/logistum#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
-    "express": "^4.14.0"
+    "e": "0.0.4",
+    "express": "^4.14.0",
+    "jsonwebtoken": "^7.1.9",
+    "mongoose": "^4.7.0",
+    "nodemon": "^1.11.0"
   }
 }
