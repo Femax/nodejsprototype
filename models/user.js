@@ -14,32 +14,36 @@ var UserSchema = new Schema({
     },
     token: {
         type: String
-    },
+    }
 });
 
-UserSchema.method.findUserByName = function findUserByName(login, callback) {
-    if (login) {
-        return this.model('User').find({
-            login: login
-        }, callback);
-    } else {
-        console.log("login is null");
-    }
-}
+UserSchema.methods = {
 
-UserSchema.method.updateToken = function updateToken(token) {
-    if (token) {
+    /**
+     * Update token
+     *
+     * @param {String} token
+     * @api private
+     */
+
+    updateToken: function(token) {
         this.token = token;
-    } else {
-        console.log("token is null");
-    }
-}
+        return this.save();
+    },
 
-UserSchema.method.addUser = function addUser(login,password,callback) {
-    var User = new this();
-    user.login = login;
-    user.password = password;
-    this.save(callback);
-}
+
+    /**
+     * Delete current token
+     *
+     * @api private
+     */
+
+    deleteToken: function() {
+        this.token = {};
+        this.save();
+    }
+
+};
+
 
 module.exports = mongoose.model("User", UserSchema);
