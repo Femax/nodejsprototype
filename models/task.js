@@ -16,7 +16,7 @@ var TaskSchema = new Schema({
     },
     endTimeInterval: {
         type: Number,
-        required:true
+        required: true
     },
     startLocation: {
         type: ObjectId,
@@ -35,22 +35,46 @@ var TaskSchema = new Schema({
         required: true
     },
     comments: [{
-        type: Number,
+        type: ObjectId,
         ref: 'Comment'
     }]
 });
 
 TaskSchema.methods = {
-  /**
-   * Update token
-   *
-   * @param {Object} location
-   * @api private
-   */
-  updateLocation: function(locationid) {
-      this.location = locationid;
-      return this.save();
-  }
+    /**
+     * Update token
+     *
+     * @param {Object} location
+     * @api private
+     */
+    updateLocation: function(locationid) {
+        this.location = locationid;
+        return this.save();
+    }
 
 }
+
+TaskSchema.statics = {
+
+
+    /**
+     * List tasks
+     *
+     * @param {Object} options
+     * @api private
+     */
+
+    list: function(options) {
+        const weight = options.weight || {};
+        const hasRefrigerator = options.hasRefrigerator || false;
+        return this.find({
+                weight: weight,
+                isRefrigeratorNeeded: hasRefrigerator
+            })
+            .populate('startLocation')
+            .populate('endLocation')
+            .populate('comments')
+            .exec();
+    }
+};
 module.exports = mongoose.model("Task", TaskSchema);

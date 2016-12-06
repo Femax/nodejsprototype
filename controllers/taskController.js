@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var Comment = require('../models/comment')
 var Task = require('../models/task');
 var Location = require('../models/location');
 var Driver = require('../models/driver');
@@ -8,24 +8,17 @@ var Truck = require('../models/truck');
 
 router.post('/getTasks', function(req, res) {
     //params sended from client
-    const maxWeight = req.body.maxWeight;
-    const minWeight = req.body.minWeight;
-    const hasRefrigerator = req.body.hasRefrigerator;
-    const isActive = req.body.isActive;
+    const weight = req.body.weight;
+    const isRefrigeratorNeeded = req.body.isRefrigeratorNeeded;
+    const options = {
+      weight: weight,
+      hasRefrigerator: isRefrigeratorNeeded
+      };
     //find task for params
-    Task.find({
-        maxWeight: maxWeight,
-        minWeight: minWeight,
-        hasRefrigerator: hasRefrigerator,
-        isActive: isActive
-    }, function(err, tasks) {
-        if (err) res.status(404).json({
-            error: true,
-            message: err.message
-        })
-        res.status(200).json(tasks);
+    Task.list(options).then(function (tasks){
+      console.log(tasks);
+      res.send(tasks);
     });
-
 
 });
 

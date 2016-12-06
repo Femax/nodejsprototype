@@ -15,6 +15,7 @@ var UserSchema = new Schema({
     token: {
         type: String
     }
+    
 });
 
 UserSchema.methods = {
