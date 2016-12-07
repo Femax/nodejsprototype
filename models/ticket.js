@@ -2,9 +2,13 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
-var TaskSchema = new Schema({
-    uuid: {
+var TicketSchema = new Schema({
+    id: {
         type: ObjectId,
+    },
+    userId: {
+        type: ObjectId,
+        ref: 'User'
     },
     createTime: {
         type: Number,
@@ -37,10 +41,14 @@ var TaskSchema = new Schema({
     comments: [{
         type: ObjectId,
         ref: 'Comment'
+    }],
+    bid: [{
+      type: ObjectId,
+      ref: 'Bid'
     }]
 });
 
-TaskSchema.methods = {
+TicketSchema.methods = {
     /**
      * Update token
      *
@@ -54,11 +62,11 @@ TaskSchema.methods = {
 
 }
 
-TaskSchema.statics = {
+TicketSchema.statics = {
 
 
     /**
-     * List tasks
+     * List tickets
      *
      * @param {Object} options
      * @api private
@@ -74,7 +82,8 @@ TaskSchema.statics = {
             .populate('startLocation')
             .populate('endLocation')
             .populate('comments')
+            .populate('bid')
             .exec();
     }
 };
-module.exports = mongoose.model("Task", TaskSchema);
+module.exports = mongoose.model("Ticket", TicketSchema);

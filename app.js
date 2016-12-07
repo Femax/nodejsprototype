@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({
 app.use(morgan('dev'));
 app.use('/', require('./controllers/authController'));
 app.use(require('./middlewares/tokenValidator')); //middleware to authenticate token
-app.use('/', require('./controllers/taskController')); //Apis to protect and use token should be placed here
+app.use('/', require('./controllers/ticketController')); //Apis to protect and use token should be placed here
 
 app.listen(config.port, function() {
     console.log("Listening at Port " + config.port);

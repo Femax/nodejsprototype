@@ -1,29 +1,63 @@
 var express = require('express');
 var router = express.Router();
 var Comment = require('../models/comment')
-var Task = require('../models/task');
+var Ticket = require('../models/ticket');
 var Location = require('../models/location');
 var Driver = require('../models/driver');
 var Truck = require('../models/truck');
+var Bid = require('../models/bid');
 
-router.post('/getTasks', function(req, res) {
+router.get('/ticket', function(req, res) {
     //params sended from client
     const weight = req.body.weight;
     const isRefrigeratorNeeded = req.body.isRefrigeratorNeeded;
     const options = {
-      weight: weight,
-      hasRefrigerator: isRefrigeratorNeeded
-      };
-    //find task for params
-    Task.list(options).then(function (tasks){
-      console.log(tasks);
-      res.send(tasks);
+        weight: weight,
+        hasRefrigerator: isRefrigeratorNeeded
+    };
+    //find tickets for params
+    Ticket.list(options).then(function(tickets) {
+        console.log(tickets);
+        res.send(tickets);
     });
 
 });
 
 
-router.post('/addTask', function(req, res) {
+router.post('/acceptUserForTicket', function(req, res) {
+    //params sended from client
+    const userId = req.body.userId;
+    const ticketId = req.body.ticketId;
+
+    Ticket.findOne({
+        id: ticketId
+    }, function(err, ticket) {
+        ticket.uId = userId;
+        ticket.bid = [];
+        ticket.save(function(err, ticket) {
+          res.status(200).send('ticket accept user');
+        });
+    });
+
+});
+
+router.post('/addBidForTicket', function(req, res) {
+    //params sended from client
+    const bid = req.body.bid;
+    const ticketId = req.body.ticketId;
+
+    Ticket.findOne({
+        id: ticketId
+    }, function(err, ticket) {
+        ticket.bid = ticket.bid.push(bid);
+        ticket.save(function(err, ticket) {
+          res.status(200).send('Bid sended for ticket');
+        });
+    })
+
+});
+
+router.put('/ticket', function(req, res) {
     //params sended from client
     const lat = req.body.lat;
     const lng = req.body.lng;
@@ -36,6 +70,7 @@ router.post('/addTask', function(req, res) {
     const endTimeInterval = req.body.endTimeInterval;
     const weight = req.body.weight;
     const isRefrigeratorNeeded = req.body.isRefrigeratorNeeded;
+
     console.log(req.body);
     //construct location
     var location = new Location({
@@ -43,9 +78,9 @@ router.post('/addTask', function(req, res) {
         lng: lng,
         updateTime: updateTime
     });
-    //save location, task
+    //save location, ticket
     location.save(function(err, location) {
-        //construct task
+        //construct ticket
         console.log(location);
         if (err) {
             console.log(err.errors);
@@ -54,7 +89,7 @@ router.post('/addTask', function(req, res) {
                 message: err.message
             });
         } else {
-            var task = new Task({
+            var ticket = new Ticket({
                 createTime: createTime,
                 startTimeInterval: startTimeInterval,
                 endTimeInterval: endTimeInterval,
@@ -64,7 +99,7 @@ router.post('/addTask', function(req, res) {
                 endLocation: location._id
             });
 
-            task.save(function(err, task) {
+            ticket.save(function(err, ticket) {
                 if (err) {
                     console.log(err.errors);
                     res.status(404).send({
@@ -75,7 +110,7 @@ router.post('/addTask', function(req, res) {
 
                     res.status(200).json({
                         error: false,
-                        task: task
+                        ticket: ticket
                     });
 
                 }

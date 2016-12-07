@@ -14,8 +14,11 @@ var UserSchema = new Schema({
     },
     token: {
         type: String
+    },
+    phone: {
+        type: Number,
+        required: false
     }
-    
 });
 
 UserSchema.methods = {
