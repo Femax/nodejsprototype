@@ -24,7 +24,7 @@ router.get('/ticket', function(req, res) {
 });
 
 
-router.post('/acceptUserForTicket', function(req, res) {
+router.post('/acceptBidForTicket', function(req, res) {
     //params sended from client
     const userId = req.body.userId;
     const ticketId = req.body.ticketId;
@@ -35,7 +35,7 @@ router.post('/acceptUserForTicket', function(req, res) {
         ticket.uId = userId;
         ticket.bid = [];
         ticket.save(function(err, ticket) {
-          res.status(200).send('ticket accept user');
+            res.status(200).send('ticket accept user');
         });
     });
 
@@ -51,7 +51,7 @@ router.post('/addBidForTicket', function(req, res) {
     }, function(err, ticket) {
         ticket.bid = ticket.bid.push(bid);
         ticket.save(function(err, ticket) {
-          res.status(200).send('Bid sended for ticket');
+            res.status(200).send('Bid sended for ticket');
         });
     })
 
@@ -62,7 +62,7 @@ router.put('/ticket', function(req, res) {
     const lat = req.body.lat;
     const lng = req.body.lng;
     const updateTime = req.body.updateTime;
-
+    const status = req.body.status;
     const createTime = req.body.createTime;
     const startLocation = req.body.startLocation;
     const endLocation = req.body.endLocation;
@@ -114,6 +114,26 @@ router.put('/ticket', function(req, res) {
                     });
 
                 }
+            });
+        }
+    });
+});
+
+router.delete('/ticket', function(req, res) {
+    //params sended from client
+    const ticketId = req.body.ticketId;
+
+    console.log(req.body);
+    Ticket.find({
+        ticketId: ticketId
+    }, function(err, ticket) {
+        if (err) res.status(400).send("delete fail");
+        else {
+            Bid.find({
+                bidId: ticket.bidId
+            }).remove(function(err) {
+                if (err) res.status(400).send("delete fail");
+                else  ticket.remove();
             });
         }
     });

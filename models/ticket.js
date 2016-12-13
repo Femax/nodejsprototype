@@ -22,6 +22,10 @@ var TicketSchema = new Schema({
         type: Number,
         required: true
     },
+    status: {
+      type: String,
+      required: true
+    },
     startLocation: {
         type: ObjectId,
         ref: 'Location'
@@ -49,16 +53,7 @@ var TicketSchema = new Schema({
 });
 
 TicketSchema.methods = {
-    /**
-     * Update token
-     *
-     * @param {Object} location
-     * @api private
-     */
-    updateLocation: function(locationid) {
-        this.location = locationid;
-        return this.save();
-    }
+  
 
 }
 

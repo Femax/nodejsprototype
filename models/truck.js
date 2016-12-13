@@ -3,20 +3,19 @@ var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
 var TruckSchema = new Schema({
-    uuid: {
-        type: Number,
-        required: true
+    _id: {
+        type: Schema.ObjectId
     },
     gosNubmer: {
         type: String,
         required: true
     },
-    location: {
-        type: Number,
+    locationId: {
+        type: ObjectId,
         ref: 'Location'
     },
-    assignedDriverId: {
-        type: Number,
+    assignedUserId: {
+        type: ObjectId,
         ref: 'Driver'
     },
     maxWeight: {
@@ -37,4 +36,22 @@ var TruckSchema = new Schema({
     }
 });
 
+TruckSchema.methods = {
+    /**
+     * Update location
+     *
+     * @param {Object} location
+     * @api private
+     */
+    update: function(fields,callback) {
+        if (fields.locationId)  this.locationId = fields.locationId;
+        if (fields.assignedUserId) this.assignedUserId = fields.assignedUserId;
+        if (fields.maxWeight) this.maxWeight = fields.maxWeight;
+        if (fields.minWeight) this.minWeight = fields.minWeight;
+        if (fields.hasRefrigerator) this.hasRefrigerator = fields.hasRefrigerator;
+        if (fields.isActive) this.isActive = fields.isActive;
+        return this.save(callback());
+    }
+
+}
 module.exports = mongoose.model("Truck", TruckSchema);
