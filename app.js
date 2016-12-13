@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var morgan = require('morgan');
+var fileUpload = require('express-fileupload');
 
 global.config = require('./config');
 mongoose.connect(config.mongodbUrl); // connect to database
@@ -12,6 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+app.use(fileUpload());
 app.use(morgan('dev'));
 app.use('/', require('./controllers/authController'));
 app.use(require('./middlewares/tokenValidator')); //middleware to authenticate token
