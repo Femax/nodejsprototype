@@ -2,10 +2,18 @@ var ImageModule = function ImageModule() {
     this.pathToSaveFolder = './public/image';
     this.imageDefaultName = 'ticket-';
 }
-ImageModule.prototype.saveImage = function(files,imageId) {
+
+/**
+ * Upload image
+ *
+ * @param {Object} files
+ * files contains req.files field
+ * @api private
+ */
+ImageModule.prototype.saveImage = function(files, imageId) {
     var sampleFile;
     sampleFile = files.sampleFile;
-    sampleFile.mv(this.pathToSaveFolder+this.imageDefaultName+imageId+'.jpg', function(err) {
+    sampleFile.mv(this.pathToSaveFolder + this.imageDefaultName + imageId + '.jpg', function(err) {
         if (err) {
             callback(err);
         } else {
@@ -14,7 +22,7 @@ ImageModule.prototype.saveImage = function(files,imageId) {
     });
 };
 ImageModule.prototype.getImageUrl = function(imageId) {
-return pathToSaveFolder + imageDefaultName+imageId+'.jpg';
+    return pathToSaveFolder + imageDefaultName + imageId + '.jpg';
 };
 
 module.exports = ImageModule;

@@ -40,7 +40,7 @@ TruckSchema.methods = {
     /**
      * Update location
      *
-     * @param {Object} location
+     * @param {Object} fields
      * @api private
      */
     update: function(fields,callback) {
