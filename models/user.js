@@ -3,7 +3,6 @@ var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
 var UserSchema = new Schema({
-    id: ObjectId,
     login: {
         type: String,
         required: true

@@ -3,10 +3,7 @@ var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
 var TruckSchema = new Schema({
-    _id: {
-        type: Schema.ObjectId
-    },
-    gosNubmer: {
+    gosNumber: {
         type: String,
         required: true
     },
@@ -16,7 +13,7 @@ var TruckSchema = new Schema({
     },
     assignedUserId: {
         type: ObjectId,
-        ref: 'Driver'
+        ref: 'User'
     },
     maxWeight: {
         type: Number,

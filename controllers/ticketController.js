@@ -6,7 +6,8 @@ var Location = require('../models/location');
 var Driver = require('../models/driver');
 var Truck = require('../models/truck');
 var Bid = require('../models/bid');
-
+var imageModule = require('../module/imageModule');
+var mongoose = require('mongoose');
 router.get('/ticket', function(req, res) {
     //params sended from client
     const weight = req.body.weight;
@@ -24,36 +25,89 @@ router.get('/ticket', function(req, res) {
 });
 
 
-router.post('/acceptBidForTicket', function(req, res) {
-    //params sended from client
-    const userId = req.body.userId;
-    const ticketId = req.body.ticketId;
+// router.post('/acceptBidForTicket', function(req, res) {
+//     //params sended from client
+//     const userId = req.body.userId;
+//     const ticketId = req.body.ticketId;
+//
+//     Ticket.findOne({
+//         id: ticketId
+//     }, function(err, ticket) {
+//         ticket.uId = userId;
+//         ticket.bid = [];
+//         ticket.save(function(err, ticket) {
+//             res.status(200).send('ticket accept user');
+//         });
+//     });
+//
+// });
 
-    Ticket.findOne({
-        id: ticketId
-    }, function(err, ticket) {
-        ticket.uId = userId;
-        ticket.bid = [];
-        ticket.save(function(err, ticket) {
-            res.status(200).send('ticket accept user');
-        });
-    });
-
-});
-
-router.post('/addBidForTicket', function(req, res) {
+router.post('/ticket', function(req, res) {
     //params sended from client
     const bid = req.body.bid;
     const ticketId = req.body.ticketId;
+    const lat = req.body.lat;
+    const lng = req.body.lng;
+    const updateTime = req.body.updateTime;
+    const status = req.body.status;
+    const createTime = req.body.createTime;
+    const startLocation = req.body.startLocation;
+    const endLocation = req.body.endLocation;
+    const startTimeInterval = req.body.startTimeInterval;
+    const endTimeInterval = req.body.endTimeInterval;
+    const weight = req.body.weight;
+    const isRefrigeratorNeeded = req.body.isRefrigeratorNeeded;
+    const aceeptBid = req.body.acceptBid;
+    const files = req.filse;
 
-    Ticket.findOne({
-        id: ticketId
-    }, function(err, ticket) {
-        ticket.bid = ticket.bid.push(bid);
-        ticket.save(function(err, ticket) {
-            res.status(200).send('Bid sended for ticket');
-        });
-    })
+    console.log(req.body);
+    //construct location
+    imageModule.saveImage(files,mongoose.Types.ObjectId())
+    var location = new Location({
+        lat: lat,
+        lng: lng,
+        updateTime: updateTime
+    });
+    //save location, ticket
+    location.save(function(err, location) {
+        //construct ticket
+        console.log(location);
+        if (err) {
+            console.log(err.errors);
+            res.status(404).send({
+                error: true,
+                message: err.message
+            });
+        } else {
+            var ticket = new Ticket({
+                createTime: createTime,
+                startTimeInterval: startTimeInterval,
+                endTimeInterval: endTimeInterval,
+                weight: weight,
+                bid: bid,
+                isRefrigeratorNeeded: isRefrigeratorNeeded,
+                startLocation: location._id,
+                endLocation: location._id
+            });
+
+            ticket.save(function(err, ticket) {
+                if (err) {
+                    console.log(err.errors);
+                    res.status(404).send({
+                        error: true,
+                        message: err.message
+                    });
+                } else {
+
+                    res.status(200).json({
+                        error: false,
+                        ticket: ticket
+                    });
+
+                }
+            });
+        }
+    });
 
 });
 
@@ -96,7 +150,8 @@ router.put('/ticket', function(req, res) {
                 weight: weight,
                 isRefrigeratorNeeded: isRefrigeratorNeeded,
                 startLocation: location._id,
-                endLocation: location._id
+                endLocation: location._id,
+                status: 'open'
             });
 
             ticket.save(function(err, ticket) {

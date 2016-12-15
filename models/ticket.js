@@ -23,8 +23,8 @@ var TicketSchema = new Schema({
         required: true
     },
     status: {
-      type: String,
-      required: true
+        type: String,
+        required: true
     },
     startLocation: {
         type: ObjectId,
@@ -46,14 +46,18 @@ var TicketSchema = new Schema({
         type: ObjectId,
         ref: 'Comment'
     }],
+    imageId: {
+        type: ObjectId,
+        ref: 'Comment'
+    },
     bid: [{
-      type: ObjectId,
-      ref: 'Bid'
+        type: ObjectId,
+        ref: 'Bid'
     }]
 });
 
 TicketSchema.methods = {
-  
+
 
 }
 
@@ -68,17 +72,26 @@ TicketSchema.statics = {
      */
 
     list: function(options) {
-        const weight = options.weight || {};
+        const weight = options.weight || 0;
         const hasRefrigerator = options.hasRefrigerator || false;
-        return this.find({
-                weight: weight,
-                isRefrigeratorNeeded: hasRefrigerator
-            })
-            .populate('startLocation')
-            .populate('endLocation')
-            .populate('comments')
-            .populate('bid')
-            .exec();
+        if (weight == 0 && !hasRefrigerator) {
+            return this.find()
+                .populate('startLocation')
+                .populate('endLocation')
+                .populate('comments')
+                .populate('bid')
+                .exec();
+        } else {
+            return this.find({
+                    weight: weight,
+                    isRefrigeratorNeeded: hasRefrigerator
+                })
+                .populate('startLocation')
+                .populate('endLocation')
+                .populate('comments')
+                .populate('bid')
+                .exec();
+        }
     }
 };
 module.exports = mongoose.model("Ticket", TicketSchema);
