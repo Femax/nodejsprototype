@@ -112,9 +112,6 @@ router.post('/truck', function(req, res) {
             })
         }
     });
-
-
-
 });
 
 module.exports = router;

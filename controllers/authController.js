@@ -3,8 +3,8 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 
-router.post('/add', function(req, res) {
-    if (req.body.password || req.body.name) {
+router.post('/register', function(req, res) {
+    if (req.body.password && req.body.login) {
         var user = new User({
             login: req.body.login,
             password: req.body.password
@@ -37,8 +37,6 @@ router.post('/auth', function(req, res) {
         User.findOne({
             login: req.body.login
         }, function(err, user) {
-
-
             if (err) {
                 console.log(err.errors);
                 res.status(404).send({
@@ -47,8 +45,7 @@ router.post('/auth', function(req, res) {
                 });
             }
 
-
-            if (user.password === req.body.password) {
+            if (user && user.password === req.body.password) {
                 var token = jwt.sign({
                     login: user.login,
                     password: user.password
@@ -63,7 +60,7 @@ router.post('/auth', function(req, res) {
             } else {
                 res.status(404).json({
                     error: true,
-                    message: 'Wrong password'
+                    message: 'Wrong login or password'
                 });
             }
         });

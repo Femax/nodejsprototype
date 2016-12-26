@@ -1,11 +1,9 @@
 var mongoose = require('mongoose');
+var Bid = require('./bid');
 var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
 var TicketSchema = new Schema({
-    id: {
-        type: ObjectId,
-    },
     userId: {
         type: ObjectId,
         ref: 'User'
@@ -26,16 +24,14 @@ var TicketSchema = new Schema({
         type: String,
         required: true
     },
-    startLocation: {
+    startLocationId: {
         type: ObjectId,
-        ref: 'Location'
+        ref: 'Location',
+        required: true
     },
-    endLocation: {
+    endLocationId: {
         type: ObjectId,
-        ref: 'Location'
-    },
-    weight: {
-        type: Number,
+        ref: 'Location',
         required: true
     },
     isRefrigeratorNeeded: {
@@ -46,9 +42,8 @@ var TicketSchema = new Schema({
         type: ObjectId,
         ref: 'Comment'
     }],
-    imageId: {
-        type: ObjectId,
-        ref: 'Comment'
+    imageUrl: {
+        type: String
     },
     bid: [{
         type: ObjectId,
@@ -57,19 +52,45 @@ var TicketSchema = new Schema({
 });
 
 TicketSchema.methods = {
+    /**
+     * Update location
+     *
+     * @param {Object} fields
+     * @api private
+     */
 
+    updateLocation: function(fieds, callback) {
+
+    }
 
 }
 
 TicketSchema.statics = {
 
+    deleteTicketById: function(id) {
+        this.findOne({
+            id: id
+        }, function(err, ticket) {
+            if (err) {
+                console.log(err.message);
+                return ;
+            }
+            Bid.remove(ticket.bid)
+            ticket.remove(function(err) {
+                if (err) console.log("Mongoose error :" + err.message);
+                else {
 
+                }
+            });
+        });
+    },
     /**
      * List tickets
      *
      * @param {Object} options
      * @api private
      */
+
 
     list: function(options) {
         const weight = options.weight || 0;

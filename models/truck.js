@@ -47,6 +47,7 @@ TruckSchema.methods = {
         if (fields.minWeight) this.minWeight = fields.minWeight;
         if (fields.hasRefrigerator) this.hasRefrigerator = fields.hasRefrigerator;
         if (fields.isActive) this.isActive = fields.isActive;
+
         return this.save(callback());
     }
 

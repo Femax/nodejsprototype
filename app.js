@@ -13,14 +13,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use('/download',express.static('./public/images'));
 app.use(fileUpload());
-app.use(morgan('dev'));
+app.use('/download',express.static('./public/images'));
 app.use('/', require('./controllers/authController'));
-app.use(require('./middlewares/tokenValidator')); //middleware to authenticate token
-//Apis to protect and use token should be placed here
 app.use('/', require('./controllers/ticketController'));
 app.use('/', require('./controllers/truckController'));
+app.use(morgan('dev'));
+app.use(require('./middlewares/tokenValidator')); //middleware to authenticate token
+//Apis to protect and use token should be placed here
+
 
 app.listen(config.port, function() {
     console.log("Listening at Port " + config.port);

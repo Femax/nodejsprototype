@@ -1,5 +1,5 @@
 var ImageModule = function ImageModule() {
-    this.pathToSaveFolder = './public/image';
+    this.pathToSaveFolder = './public/image/';
     this.imageDefaultName = 'ticket-';
 }
 
@@ -10,9 +10,10 @@ var ImageModule = function ImageModule() {
  * files contains req.files field
  * @api private
  */
-ImageModule.prototype.saveImage = function(files, imageId) {
+ImageModule.prototype.saveImage = function(files, imageId,callback) {
     var sampleFile;
-    sampleFile = files.sampleFile;
+    console.log(files);
+    sampleFile = files.ticketPhoto;
     sampleFile.mv(this.pathToSaveFolder + this.imageDefaultName + imageId + '.jpg', function(err) {
         if (err) {
             callback(err);
@@ -21,8 +22,22 @@ ImageModule.prototype.saveImage = function(files, imageId) {
         }
     });
 };
+
 ImageModule.prototype.getImageUrl = function(imageId) {
     return pathToSaveFolder + imageDefaultName + imageId + '.jpg';
 };
 
-module.exports = ImageModule;
+ImageModule.prototype.deleteImage = function(imageId) {
+    fileName = this.pathToSaveFolder + this.imageDefaultName + imageId + '.jpg'
+    fs.exists(fileName, function(exists) {
+        if (exists) {
+            //Show in green
+            console.log(gutil.colors.green('File exists. Deleting now ...'));
+            fs.unlink(fileName);
+        } else {
+            //Show in red
+            console.log(gutil.colors.red('File not found, so not deleting.'));
+        }
+    });
+};
+module.exports = new ImageModule();
