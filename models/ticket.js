@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-var Bid = require('./bid');
 var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
@@ -8,47 +7,26 @@ var TicketSchema = new Schema({
         type: ObjectId,
         ref: 'User'
     },
-    createTime: {
-        type: Number,
-        required: true
-    },
-    startTimeInterval: {
-        type: Number,
-        required: true
-    },
-    endTimeInterval: {
-        type: Number,
+    createDate: {
+        type: Date,
         required: true
     },
     status: {
         type: String,
         required: true
     },
-    startLocationId: {
+    customer: {
         type: ObjectId,
-        ref: 'Location',
+        ref: 'Customer',
         required: true
     },
-    endLocationId: {
+    route: {
         type: ObjectId,
-        ref: 'Location',
-        required: true
+        ref: 'Route'
     },
-    isRefrigeratorNeeded: {
-        type: Boolean,
-        required: true
-    },
-    comments: [{
-        type: ObjectId,
-        ref: 'Comment'
-    }],
-    imageUrl: {
+    imageName: {
         type: String
-    },
-    bid: [{
-        type: ObjectId,
-        ref: 'Bid'
-    }]
+    }
 });
 
 TicketSchema.methods = {
@@ -59,30 +37,29 @@ TicketSchema.methods = {
      * @api private
      */
 
-    updateLocation: function(fieds, callback) {
+    updateLocation: function (fieds, callback) {
 
     }
 
 }
 
 TicketSchema.statics = {
-
-    deleteTicketById: function(id) {
+    getImageName: function (id) {
         this.findOne({
             id: id
-        }, function(err, ticket) {
-            if (err) {
-                console.log(err.message);
-                return ;
-            }
-            Bid.remove(ticket.bid)
-            ticket.remove(function(err) {
-                if (err) console.log("Mongoose error :" + err.message);
-                else {
-
-                }
-            });
+        }, function (err, ticket) {
+            return (ticket.imageName);
         });
+    },
+
+    saveTicket: function (ticketData, routeId, userId) {
+        ticket = new this({
+            userId: userId,
+            route: routeId,
+            status: ticketData.status,
+            createDate: new Date()
+        });
+        ticket.save();
     },
     /**
      * List tickets
@@ -92,25 +69,19 @@ TicketSchema.statics = {
      */
 
 
-    list: function(options) {
+    list: function (options) {
         const weight = options.weight || 0;
         const hasRefrigerator = options.hasRefrigerator || false;
         if (weight == 0 && !hasRefrigerator) {
             return this.find()
-                .populate('startLocation')
-                .populate('endLocation')
-                .populate('comments')
-                .populate('bid')
+                .populate('route')
                 .exec();
         } else {
             return this.find({
-                    weight: weight,
-                    isRefrigeratorNeeded: hasRefrigerator
-                })
-                .populate('startLocation')
-                .populate('endLocation')
-                .populate('comments')
-                .populate('bid')
+                weight: weight,
+                isRefrigeratorNeeded: hasRefrigerator
+            })
+                .populate('route')
                 .exec();
         }
     }

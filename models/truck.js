@@ -9,7 +9,7 @@ var TruckSchema = new Schema({
     },
     locationId: {
         type: ObjectId,
-        ref: 'Location'
+        ref: 'Route'
     },
     assignedUserId: {
         type: ObjectId,

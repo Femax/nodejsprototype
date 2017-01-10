@@ -1,7 +1,7 @@
 var Comment = require('../models/comment')
 var Ticket = require('../models/ticket');
-var Location = require('../models/location');
-var Driver = require('../models/driver');
+var Location = require('../models/routeItem');
+var Driver = require('../models/customer');
 var Truck = require('../models/truck');
 var Bid = require('../models/bid');
 var imageModule = require('../module/imageModule');
@@ -22,8 +22,8 @@ var Database = function Database() {
 Database.addTicket(data)
 {
     var transaction = new Transaction();
-    transaction.insert('Location', {
-        createTime: data.createTime,
+    transaction.insert('Route', {
+        createDate: data.createDate,
         endTime: data.endTime,
         status: data.status,
         startLocation: startLocation._id,
@@ -32,7 +32,7 @@ Database.addTicket(data)
         imageUrl: imageUrl
     });
     transaction.insert('Ticket', {
-        createTime: data.createTime,
+        createDate: data.createDate,
         endTime: data.endTime,
         status: data.status,
         startLocation: startLocation._id,
@@ -43,7 +43,7 @@ Database.addTicket(data)
 
 }
 
-Database.deleteTicketById(ticketId)
+Database.deleteImageTicketIById(ticketId)
 {
 
 }

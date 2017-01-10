@@ -1,7 +1,7 @@
-var ImageModule = function ImageModule() {
-    this.pathToSaveFolder = './public/image/';
-    this.imageDefaultName = 'ticket-';
-}
+var ImageModule = function () {
+};
+ImageModule.pathToSaveFolder = './public/image/';
+ImageModule.imageDefaultName = 'ticket-';
 
 /**
  * Upload image
@@ -10,7 +10,7 @@ var ImageModule = function ImageModule() {
  * files contains req.files field
  * @api private
  */
-ImageModule.prototype.saveImage = function(files, imageId,callback) {
+ImageModule.saveImage = function(files, imageId,callback) {
     var sampleFile;
     console.log(files);
     sampleFile = files.ticketPhoto;
@@ -23,11 +23,11 @@ ImageModule.prototype.saveImage = function(files, imageId,callback) {
     });
 };
 
-ImageModule.prototype.getImageUrl = function(imageId) {
+ImageModule.getImageName = function(imageId) {
     return pathToSaveFolder + imageDefaultName + imageId + '.jpg';
 };
 
-ImageModule.prototype.deleteImage = function(imageId) {
+ImageModule.deleteImage = function(imageId) {
     fileName = this.pathToSaveFolder + this.imageDefaultName + imageId + '.jpg'
     fs.exists(fileName, function(exists) {
         if (exists) {
@@ -40,4 +40,4 @@ ImageModule.prototype.deleteImage = function(imageId) {
         }
     });
 };
-module.exports = new ImageModule();
+module.exports =ImageModule;

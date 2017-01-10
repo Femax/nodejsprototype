@@ -1,24 +1,22 @@
 var express = require('express');
 var router = express.Router();
-var Comment = require('../models/comment')
 var Ticket = require('../models/ticket');
-var Location = require('../models/location');
-var Driver = require('../models/driver');
+var Address = require('../models/address');
+var Customer = require('../models/customer');
 var Truck = require('../models/truck');
-var Bid = require('../models/bid');
 var User = require('../models/user')
 
-router.get('/truck', function(req, res) {
+router.get('/truck', function (req, res) {
     const userId = req.body.userId;
     if (userId) Truck.find({
         userId: userId
-    }, function(err, user) {
+    }, function (err, user) {
         if (err) res.status(400).send(err.message);
         else {
             res.status(200).send(user);
         }
     });
-    else Truck.find(function(err, user) {
+    else Truck.find(function (err, user) {
         if (err) res.status(400).send(err.message);
         else {
             res.status(200).send(user);
@@ -26,7 +24,7 @@ router.get('/truck', function(req, res) {
     });
 });
 
-router.put('/truck', function(req, res) {
+router.put('/truck', function (req, res) {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     const gosNumber = req.body.gosNumber;
     const assignedUserId = req.body.assignedUserId;
@@ -37,17 +35,18 @@ router.put('/truck', function(req, res) {
     const hasRefrigerator = req.body.hasRefrigerator;
     const isActive = req.body.isActive;
     const updateTime = new Date().getMilliseconds();
-
+    
+    
     var location = new Location({
         lat: lat,
         lng: lng,
         updateTime: updateTime
     });
-    location.save(function(err, location) {
+    location.save(function (err, location) {
         if (err) res.status(400).send(err.message);
         else User.find({
             token: token
-        }, function(err, user) {
+        }, function (err, user) {
             if (err) res.status(400).send(err.message);
             var truck = new Truck({
                 gosNumber: gosNumber,
@@ -58,7 +57,7 @@ router.put('/truck', function(req, res) {
                 hasRefrigerator: hasRefrigerator,
                 isActive: isActive
             });
-            truck.save(function(err, truck) {
+            truck.save(function (err, truck) {
                 if (err) {
                     res.status(400).send(err.message);
                     console.log(err);
@@ -68,7 +67,7 @@ router.put('/truck', function(req, res) {
     });
 });
 
-router.post('/truck', function(req, res) {
+router.post('/truck', function (req, res) {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
 
     const truckId = truckId;
@@ -87,7 +86,7 @@ router.post('/truck', function(req, res) {
         lng: lng
     });
 
-    location.save(function(err, location) {
+    location.save(function (err, location) {
         if (err) res.status(400).send(err.message);
         else {
             var fields = {
@@ -102,7 +101,7 @@ router.post('/truck', function(req, res) {
             };
             truck.find({
                 truckId: truckId
-            }, function(err, truck) {
+            }, function (err, truck) {
                 if (err) {
                     location.remove();
                     res.status(400).send(err.message);

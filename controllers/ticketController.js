@@ -1,12 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var Comment = require('../models/comment')
 var Ticket = require('../models/ticket');
-var Location = require('../models/location');
-var Driver = require('../models/driver');
-var Truck = require('../models/truck');
-var Bid = require('../models/bid');
-var imageModule = require('../module/imageModule');
+var RouteItem = require('../models/routeItem');
+var Route = require('../models/route');
+var imageModule = require('../module/imageGridFs');
 var mongoose = require('mongoose');
 
 router.get('/ticket', function (req, res) {
@@ -24,142 +21,75 @@ router.get('/ticket', function (req, res) {
     });
 });
 
-
-// router.post('/acceptBidForTicket', function(req, res) {
-//     //params sended from client
-//     const userId = req.body.userId;
-//     const ticketId = req.body.ticketId;
-//
-//     Ticket.findOne({
-//         id: ticketId
-//     }, function(err, ticket) {
-//         ticket.uId = userId;
-//         ticket.bid = [];
-//         ticket.save(function(err, ticket) {
-//             res.status(200).send('ticket accept user');
-//         });
-//     });
-//
-// });
-
 router.post('/ticket', function (req, res) {
     //params sended from client
-    const status = req.body.status;
-    const updateTime = new Date().getMilliseconds();
-    const createTime = new Date().getMilliseconds();
-    const startTimeInterval = req.body.startTimeInterval;
-    const endTimeInterval = req.body.endTimeInterval;
-    const weight = req.body.weight;
-    const isRefrigeratorNeeded = req.body.isRefrigeratorNeeded;
-    const aceeptBid = req.body.acceptBid;
-
     console.log(req.body);
+    const data = JSON.parse(JSON.stringify(req.body));
+    const ticket = data.ticket;
+    console.log(data.ticket);
     //construct location
-    const startLocationJson = JSON.parse(req.body.startLocation);
-    const endLocationJson = JSON.parse(req.body.endLocation);
-    let startLocation = new Location({
-        lat: startLocationJson.lat,
-        lng: startLocationJson.lng,
-        adress: startLocationJson.adress,
-        updateTime: new Date().getMilliseconds()
-    });
-    let endLocation = new Location({
-        lat: endLocationJson.lat,
-        lng: endLocationJson.lng,
-        adress: endLocationJson.adress,
-        updateTime: new Date().getMilliseconds()
+
+    Route.saveRoute(startLocationJson,function (err, id) {
+        Ticket.saveTicket(ticket,id,User.getUserIdByToken(req.token));
     });
     //save location, ticket
-    startLocation.save(function (err, startLocation) {
-        if (err) console.log("err"+err);
-        else endLocation.save(function (err, endLocation) {
-            if (err) console.log("err:"+err);
-            else {
-                console.log("Location start:"+startLocation._id);
-                console.log("Location end:"+endLocation._id);
-                var ticket = new Ticket({
-                    createTime: createTime,
-                    startTimeInterval: startTimeInterval,
-                    endTimeInterval: endTimeInterval,
-                    weight: weight,
-                    isRefrigeratorNeeded: isRefrigeratorNeeded,
-                    startLocationId: startLocation._id,
-                    endLocationId: endLocation._id,
-                    status: status
-                });
 
-                ticket.save();
-                res.status(200).json({
-                    error: false,
-                    ticket: ticket
-                });
-            }
-        });
+});
+
+
+router.put('/ticket/:id', function (req, res) {
+    //params sended from client
+    console.log(req.body);
+    const data = JSON.parse(JSON.stringify(req.body));
+    const ticket = data.ticket;
+    console.log(data.ticket);
+    //construct location
+    
+    Route.saveRoute(startLocationJson,function (err, id) {
+        Ticket.saveTicket(ticket,id,User.getUserIdByToken(req.token));
     });
+    //save location, ticket
 });
 
 router.post('/ticket/:id/photo', function (req, res) {
     const files = req.files;
     const id = req.params.id;
-    const imageId = mongoose.Types.ObjectId();
     console.log(req.files);
     console.log(id);
-    imageModule.saveImage(files, imageId, function (err) {
-        console.log(err.message);
-    });
-    const query = {
-        id: id
-    };
-    const update = {
-        imageId: imageId
-    };
-    Ticket.findOneAndUpdate(query, update, {}, function (err) {
-        if (err) {
-            res.status(500).send(err.message);
-        } else res.status(200).send('Save succesfully');
-    });
-});
+    const imagename = 'ticket-' + id;
+    console.log("err=0");
+    imageModule.saveFile(req, imagename, function (err) {
+        if (err) res.status(500).send(err.message);
+        else {
+            console.log("err=0");
+            const query = {
+                id: id
+            };
+            console.log("err=0");
 
-router.put('/ticket/:id', function (req, res) {
-    //params sended from client
-    const ticketId = req.params.id;
-    const lat = req.body.lat;
-    const lng = req.body.lng;
-    const updateTime = new Date().getMilliseconds();
-    const status = req.body.status;
-    const startLocation = req.body.startLocation;
-    const endLocation = req.body.endLocation;
-    const startTimeInterval = req.body.startTimeInterval;
-    const endTimeInterval = req.body.endTimeInterval;
-    const weight = req.body.weight;
-    const isRefrigeratorNeeded = req.body.isRefrigeratorNeeded;
+            const update = {
+                imageName: imagename
+            };
+            console.log("err=0");
+            Ticket.update(update, function (err, numberAffected, rawResponse) {
+                console.log("err:" + err);
+                console.log("numberAffected:" + numberAffected);
+                console.log("rawResponse:" + rawResponse);
+                if (err) {
+                    console.log("err:" + err);
+                    res.status(500).send("err:" + err);
+                } else res.status(200).send('Save succesfully');
+            });
+            console.log("err=0");
 
-    console.log(req.body);
-    //construct location
-    var update = {
-        lat: lat,
-        lng: lng,
-        status: status,
-        startLocation: startLocation,
-        endLocation: endLocation,
-        startTimeInterval: startTimeInterval,
-        endTimeInterval: endTimeInterval,
-        weight: weight,
-        isRefrigeratorNeeded: isRefrigeratorNeeded
-    };
-    Ticket.findOneAndUpdate({
-        id: ticketId
-    }, update, {}, function (err) {
-        if (err) {
-            res.status(500).send(err.message);
-        } else res.status(200).send('Save succesfully');
+        }
     });
 });
-
 router.delete('/ticket/:id', function (req, res) {
     //params sended from client
     const ticketId = req.params.id;
     console.log(req.body);
-    Ticket.deleteTicketById(ticketId);
+
+    Ticket.deleteTicketIById(ticketId);
 });
 module.exports = router;
