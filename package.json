@@ -21,6 +21,7 @@
     "gridfs-stream": "^1.1.1",
     "jsonwebtoken": "^7.1.9",
     "mongoose": "^4.7.0",
+    "mongoose-relationship": "^0.1.5",
     "morgan": "^1.7.0",
     "nodemon": "^1.11.0"
   }

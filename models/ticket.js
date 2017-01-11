@@ -18,7 +18,6 @@ var TicketSchema = new Schema({
     customer: {
         type: ObjectId,
         ref: 'Customer',
-        required: true
     },
     route: {
         type: ObjectId,
@@ -37,8 +36,14 @@ TicketSchema.methods = {
      * @api private
      */
 
-    updateLocation: function (fieds, callback) {
-
+    update: function (fields,routeId) {
+        this._id = fields.id;
+        this.status = fields.status;
+        this.customer = fields.customerId;
+        this.route = routeId;
+        if (fields.imageName) {
+            this.imageName = fields.imageName;
+        }
     }
 
 }
